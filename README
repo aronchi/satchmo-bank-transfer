@@ -1,0 +1,37 @@
+# How it works
+
+It sends an email with your store bank IBAN and SWIFT code to the customer.
+
+# Installation:
+
+1) Copy the source to your project_dir/payment/modules/bank_transfer
+
+2) add the module to your local_settings.py:
+   'CUSTOM_PAYMENT_MODULES' : [PROJECTNAME + '.payment.modules.bank_transfer',],
+
+3) Configure it in your http://www.store.com/settings
+
+4) Change the email template "order_complete.txt" to add your data
+
+{% trans "Payment" %}
+--------------------------------------
+{% if order.credit_card %}
+ ..(nothing changes here)..
+{% else %}
+{% for p in order.payments.all %}{% ifnotequal p.amount 0 %}
+{% trans "Payment Method" %}: {{p.payment}} - {{p.amount|floatformat:2}} ({{p.time_stamp|date:"d-m-Y H:i"}})
+{% ifequal p.payment "BANK_TRANSFER" %}
+
+{% trans "Bank Transfer" %}
+~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~
+{% trans "The order will hold until we'll receive bank confirmation of the money transfer." %}
+{% trans "Send the total payment amount to this bank account:" %}
+
+{% trans "Account Owner" %} :{{p.getPaymentMethodConfig.OWNER}} 
+{% trans "IBAN" %}: {{p.getPaymentMethodConfig.IBAN}}
+{% trans "SWIFT" %}: {{p.getPaymentMethodConfig.SWIFT}}
+{% trans "Total" %}: {{p.amount|floatformat:2|currency}} 
+
+{{p.getPaymentMethodConfig.INFORMATIONS|safe}}
+~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~ . ~
+{% endifequal %}
