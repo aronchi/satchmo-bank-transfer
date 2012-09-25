@@ -1,15 +1,11 @@
-from satchmo.configuration import *
+from livesettings import *
 from django.utils.translation import ugettext_lazy as _
-#from django.conf import settings
 
 # this is so that the translation utility will pick up the string
+gettext = lambda s: s
 
-PAYMENT_MODULES = config_get('PAYMENT', 'MODULES')
-PAYMENT_MODULES.add_choice(('PAYMENT_BANK_TRANSFER', _('Bank Transfer')))
-
-PAYMENT_GROUP = ConfigurationGroup('PAYMENT_BANK_TRANSFER', 
-    _('Bank Transfer Module Settings'), 
-    requires=PAYMENT_MODULES,
+PAYMENT_GROUP = ConfigurationGroup('PAYMENT_BANK_TRANSFER',
+    _('Bank Transfer Module Settings'),
     ordering = 100)
 
 config_register_list(
@@ -30,7 +26,7 @@ config_register_list(
         'MODULE',
         description=_('Implementation module'),
         hidden=True,
-        default = settings.PROJECTNAME + '.payment.modules.bank_transfer'), 
+        default = 'store.bank_transfer'), 
         
     StringValue(PAYMENT_GROUP,
         'KEY',
